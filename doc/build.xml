@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+/*
+ *=BEGIN LICENSE APACHE
+ *
+ * Copyright 2012, Andras Csizmadia <andras@vpmedia.eu>.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ *=END LICENSE APACHE
+ */
+-->
+<project name="generator.project" default="build" basedir="..">
+
+    <description>ImportAll.hx Generator.</description>   
+    
+    <!-- ################################################################### -->
+    <!-- ########################### SETTINGS ############################## -->
+    <!-- ################################################################### -->              
+                                              
+    <property name="src.dir" value="src"/>
+    <property name="target.filename" value="ImportAll.hx"/>
+             
+    <!-- ################################################################### -->
+    <!-- ########################### MODULES ############################### -->
+    <!-- ################################################################### -->    
+    
+    <target name="build"
+                    description="Generates dummy class importing all other classes">
+            <pathconvert property="import.flash.standard.classes"
+                            pathsep="${line.separator}">
+                    <fileset dir="${src.dir}">
+                            <include name="**/*.hx"/>
+                            <exclude name="${target.filename}"/>
+                    </fileset>
+                    <packagemapper
+                            from="${basedir}${file.separator}${src.dir}${file.separator}*.hx"
+                            to="import *;"/>
+            </pathconvert>
+            <echo message="${import.flash.standard.classes}"
+                    file="doc${file.separator}${target.filename}"/>
+    </target>    
+</project>
+
+
+    
+
+    
