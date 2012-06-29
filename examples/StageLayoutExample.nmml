@@ -7,12 +7,12 @@
 
     <!-- The app node controls general settings about your application, like the code entry point or the meta data to use while packaging. -->
     <app
-        file="SpriteLayoutExample"
-        title="SpriteLayoutExample"
+        file="StageLayoutExample"
+        title="StageLayoutExample"
         package="hu.vpmedia.haxe.nme"
         version="1.0.0"
         company="vpmedia"
-        main="SpriteLayoutExample"
+        main="StageLayoutExample"
     />  
 
     <!-- The window node controls how your application will be displayed on each platform.  -->
@@ -34,8 +34,8 @@
     <set name="SWF_VERSION" value="10.1" />
 
     <!-- You can use the classpath node to include a Haxe source code directory when compiling your project. Set the "name" attribute to the relative or absolute path to your target directory. -->
-    <classpath name="." /> 
-    <classpath name="../../../src" />     
+    <classpath name="." />  
+    <classpath name="../src" /> 
     
     <!-- In addition to classpaths, you can use the haxelib node to include code from an installed library off of haxelib.  -->             
     <haxelib name="nme" /><!--framework--> 

@@ -1,0 +1,6 @@
+-cmd haxelib run nme build "SpriteLayoutExample.nmml" flash    
+--next
+-cmd haxelib run nme build "StageLayoutExample.nmml" flash    
+--next
+-cmd haxelib run nme build "TransformToolExample.nmml" flash    
+--next
