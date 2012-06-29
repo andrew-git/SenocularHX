@@ -1,0 +1,47 @@
+################################################################################
+# Haxe Test Build Script
+# author: Andras Csizmadia <www.vpmedia.eu>      
+# version: 1.0.0
+################################################################################
+
+#######################################
+# Start
+#######################################
+# Flash 10
+-main TestMain
+-lib munit
+-lib hamcrest
+-lib nme
+-cp ../src
+-cp src
+
+-swf-version 10
+-swf bin/as3_test.swf
+
+--remap flash:nme
+--times
+
+--next
+
+#######################################
+# Start
+#######################################
+# JavaScript
+-main TestMain
+-lib munit
+-lib hamcrest
+-lib nme
+-cp ../src
+-cp src
+
+-js bin/js_test.js
+
+--remap flash:nme
+--times
+               
+--next
+
+#######################################
+# Start
+#######################################
+-cmd haxelib run munit run
