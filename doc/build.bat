@@ -19,4 +19,6 @@ PUSHD %CD%
 TITLE %~n0
 
 :: STARTUP  
-haxe build.hxml
+haxe -xml doc.xml -swf main.swf -lib nme -cp ../src ImportAll
+del main.swf
+haxedoc doc.xml -f senocular
