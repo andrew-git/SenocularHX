@@ -1,5 +1,5 @@
 ::
-:: Copyright 2012, András Csizmadia <andras@vpmedia.eu>.
+:: Copyright 2012, Andras Csizmadia <andras@vpmedia.eu>.
 ::
 
 :: Echo off and begin localisation of Environment Variables

@@ -58,6 +58,7 @@ class TransformToolCursor extends TransformToolControl {
         active = false;
         references = new ObjectHash();
         addEventListener(TransformTool.CONTROL_INIT, init);
+        super();
     }
 
     /**
@@ -118,7 +119,7 @@ class TransformToolCursor extends TransformToolControl {
      * Called when the cursor should position itself
 
      */    public function position(event : Event = null) : Void {
-        if(parent)  {
+        if(parent!=null)  {
             x = parent.mouseX + mouseOffset.x;
             y = parent.mouseY + mouseOffset.y;
         }
@@ -156,14 +157,14 @@ class TransformToolCursor extends TransformToolControl {
 
     function referenceSet(event : Event) : Void {
         contact = true;
-        if(!_transformTool.currentControl)  {
+        if(_transformTool.currentControl==null)  {
             updateVisible(event);
         }
     }
 
     function referenceUnset(event : Event) : Void {
         contact = false;
-        if(!_transformTool.currentControl)  {
+        if(_transformTool.currentControl==null)  {
             updateVisible(event);
         }
     }

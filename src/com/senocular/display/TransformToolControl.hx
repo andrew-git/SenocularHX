@@ -77,7 +77,7 @@ class TransformToolControl extends MovieClip {
     }
 
     public function setRelatedObject(i : InteractiveObject) : InteractiveObject {
-        _relatedObject = (i) ? i : this;
+        _relatedObject = (i!=null) ? i : this;
         return i;
     }
 
@@ -104,6 +104,7 @@ class TransformToolControl extends MovieClip {
 
      */    public function new() {
         _relatedObject = this;
+        super();
     }
 
     /**

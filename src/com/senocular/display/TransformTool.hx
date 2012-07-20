@@ -274,15 +274,14 @@ import flash.geom.Point;
                 updateControlsVisible();
                 dispatchEvent(new Event(NEW_TARGET));
             }
-            return;
+            return null;
         }
 
         else  {
             // invalid target, do nothing
-            if(d == _target || d == this || contains(d) || (Std.is(d, DisplayObjectContainer && (try cast(d, DisplayObjectContainer) catch(e:Dynamic) null).contains(this))))  {
-                return;
+            if(d == _target || d == this || contains(d) || (Std.is(d, DisplayObjectContainer) && cast(d, DisplayObjectContainer).contains(this)))  {
+                return null;
             }
-;
             // valid target, set and update
             _target = d;
             updateMatrix();
@@ -953,8 +952,8 @@ import flash.geom.Point;
         _moveUnderObjects = true;
         _maintainControlForm = true;
         _controlSize = 8;
-        _maxScaleX = Infinity;
-        _maxScaleY = Infinity;
+        _maxScaleX = Math.POSITIVE_INFINITY;
+        _maxScaleY = Math.POSITIVE_INFINITY;
         _boundsTopLeft = new Point();
         _boundsTop = new Point();
         _boundsTopRight = new Point();
@@ -965,6 +964,7 @@ import flash.geom.Point;
         _boundsLeft = new Point();
         _boundsCenter = new Point();
         createControls();
+        super();
     }
 
     /**
@@ -1154,9 +1154,9 @@ import flash.geom.Point;
 
     function getControlByName(controlName : String) : TransformToolInternalControl {
         var control : TransformToolInternalControl;
-        var containers : Array<Dynamic> = new Array<Dynamic>(skewControls, registrationControls, cursors, rotateControls, scaleControls);
+        var containers : Array<Dynamic> = [skewControls, registrationControls, cursors, rotateControls, scaleControls];
         var i : Int = containers.length;
-        while(i-- && control == null) {
+        while(i-->0 && control == null) {
             control = try cast(containers[i].getChildByName(controlName), TransformToolInternalControl) catch(e:Dynamic) null;
         }
 
@@ -1176,14 +1176,14 @@ import flash.geom.Point;
         apply();
         dispatchEvent(new Event(CONTROL_DOWN));
         // mouse offset to allow interaction from desired point
-        mouseOffset = ((_currentControl && _currentControl.referencePoint)) ? _currentControl.referencePoint.subtract(new Point(mouseX, mouseY)) : new Point(0, 0);
+        mouseOffset = ((_currentControl!=null && _currentControl.referencePoint!=null)) ? _currentControl.referencePoint.subtract(new Point(mouseX, mouseY)) : new Point(0, 0);
         updateMouse();
         // set variables for interaction reference
         interactionStart = mouseLoc.clone();
         innerInteractionStart = innerMouseLoc.clone();
         interactionStartMatrix = _toolMatrix.clone();
         interactionStartAngle = distortAngle();
-        if(stage)  {
+        if(stage!=null)  {
             // setup stage events to manage control interaction
             stage.addEventListener(MouseEvent.MOUSE_MOVE, interactionHandler);
             stage.addEventListener(MouseEvent.MOUSE_UP, endInteractionHandler, false);
@@ -1325,8 +1325,8 @@ import flash.geom.Point;
             // the relationship of the start location to the registration point
             var regOffset : Point = innerInteractionStart.subtract(innerRegistration);
             // find the ratios between movement and the registration offset
-            var ratioH = (regOffset.x) ? moved.x / regOffset.x : 0;
-            var ratioV = (regOffset.y) ? moved.y / regOffset.y : 0;
+            var ratioH = (regOffset.x>0) ? moved.x / regOffset.x : 0;
+            var ratioV = (regOffset.y>0) ? moved.y / regOffset.y : 0;
             // have the larger of the movement distances brought down
             // based on the lowest ratio to fit the registration offset
             if(ratioH > ratioV)  {
@@ -1373,11 +1373,11 @@ import flash.geom.Point;
 
     function distortOffset(offset : Point, regDiff : Float) : Point {
         // get changes in matrix combinations based on targetBounds
-        var ratioH : Float = (regDiff) ? targetBounds.width / regDiff : 0;
-        var ratioV : Float = (regDiff) ? targetBounds.height / regDiff : 0;
+        var ratioH : Float = (regDiff>0) ? targetBounds.width / regDiff : 0;
+        var ratioV : Float = (regDiff>0) ? targetBounds.height / regDiff : 0;
         offset = interactionStartMatrix.transformPoint(offset).subtract(interactionStart);
-        offset.x *= (targetBounds.width) ? ratioH / targetBounds.width : 0;
-        offset.y *= (targetBounds.height) ? ratioV / targetBounds.height : 0;
+        offset.x *= (targetBounds.width>0) ? ratioH / targetBounds.width : 0;
+        offset.y *= (targetBounds.height>0) ? ratioV / targetBounds.height : 0;
         return offset;
     }
 
@@ -1412,7 +1412,7 @@ import flash.geom.Point;
 
     function updateMatrix(useMatrix : Matrix = null, counterTransform : Bool = true) : Void {
         if(_target != null)  {
-            _toolMatrix = (useMatrix) ? useMatrix.clone() : _target.transform.concatenatedMatrix.clone();
+            _toolMatrix = (useMatrix!=null) ? useMatrix.clone() : _target.transform.concatenatedMatrix.clone();
             if(counterTransform)  {
                 // counter transform of the parents of the tool
                 var current : Matrix = transform.concatenatedMatrix;
@@ -1586,7 +1586,7 @@ import flash.geom.Point;
             var applyMatrix : Matrix = _toolMatrix.clone();
             applyMatrix.concat(transform.concatenatedMatrix);
             // if target has a parent, counter parent transformations
-            if(_target.parent)  {
+            if(_target.parent!=null)  {
                 var invertMatrix : Matrix = target.parent.transform.concatenatedMatrix;
                 invertMatrix.invert();
                 applyMatrix.concat(invertMatrix);
@@ -1639,6 +1639,7 @@ class TransformToolInternalControl extends TransformToolControl {
         this.interactionMethod = interactionMethod;
         this.referenceName = referenceName;
         addEventListener(TransformTool.CONTROL_INIT, init);
+        super();
     }
 
     function init(event : Event) : Void {
@@ -1901,9 +1902,10 @@ class TransformToolInternalCursor extends TransformToolCursor {
         addChild(icon);
         offset = _mouseOffset;
         addEventListener(TransformTool.CONTROL_INIT, init);
+        super();
     }
 
-    function init(event : Event) : Void {
+    override function init(event : Event) : Void {
         _transformTool.addEventListener(TransformTool.NEW_TARGET, maintainTransform);
         _transformTool.addEventListener(TransformTool.CONTROL_PREFERENCE, maintainTransform);
         draw();
@@ -1926,7 +1928,7 @@ class TransformToolInternalCursor extends TransformToolCursor {
         var divs : Float = 1 + Math.floor(Math.abs(diff) / (Math.PI / 4));
         var span : Float = diff / (2 * divs);
         var cosSpan : Float = Math.cos(span);
-        var radiusc : Float = (cosSpan) ? radius / cosSpan : 0;
+        var radiusc : Float = (cosSpan>0) ? radius / cosSpan : 0;
         var i : Int;
         if(useMove)  {
             icon.graphics.moveTo(originX + Math.cos(angle1) * radius, originY - Math.sin(angle1) * radius);
@@ -1952,7 +1954,7 @@ class TransformToolInternalCursor extends TransformToolCursor {
     }
 
     override public function position(event : Event = null) : Void {
-        if(parent)  {
+        if(parent!=null)  {
             x = parent.mouseX + offset.x;
             y = parent.mouseY + offset.y;
         }
@@ -1968,6 +1970,7 @@ class TransformToolInternalCursor extends TransformToolCursor {
 class TransformToolRegistrationCursor extends TransformToolInternalCursor {
 
     public function new() {
+        super();
     }
 
     override public function draw() : Void {
@@ -1982,6 +1985,7 @@ class TransformToolRegistrationCursor extends TransformToolInternalCursor {
 class TransformToolMoveCursor extends TransformToolInternalCursor {
 
     public function new() {
+        super();
     }
 
     override public function draw() : Void {
@@ -2025,6 +2029,7 @@ class TransformToolMoveCursor extends TransformToolInternalCursor {
 class TransformToolScaleCursor extends TransformToolInternalCursor {
 
     public function new() {
+        super();
     }
 
     override public function draw() : Void {
@@ -2070,6 +2075,7 @@ class TransformToolScaleCursor extends TransformToolInternalCursor {
 class TransformToolRotateCursor extends TransformToolInternalCursor {
 
     public function new() {
+        super();
     }
 
     override public function draw() : Void {
@@ -2092,6 +2098,7 @@ class TransformToolRotateCursor extends TransformToolInternalCursor {
 class TransformToolSkewCursor extends TransformToolInternalCursor {
 
     public function new() {
+        super();
     }
 
     override public function draw() : Void {
